@@ -35,6 +35,13 @@ def timeseries_to_supervised(data: pd.DataFrame, sequence_length: int = 1) -> pd
     return df2
 
 def dataframe_to_supervised(data: pd.DataFrame, sequence_length: int = 1) -> list:
+    """
+    Does the same as timeseries_to_supervised but with whole DataFrame (all columns)
+
+    :param data: any dataframe
+    :param sequence_length: how many dataframes will be in the list
+    :return: a list of dataframes with reset index
+    """
     assert sequence_length >= 1
     sequence_length = sequence_length - 1
 
@@ -43,25 +50,47 @@ def dataframe_to_supervised(data: pd.DataFrame, sequence_length: int = 1) -> lis
     for i in range(len(shiftFrames)):
         frame = shiftFrames[i]
         frame.drop(frame.index[:sequence_length], inplace=True)
-        # don't need to
+        frame.reset_index(drop=True, inplace=True)
+        # don't need to drop from the bottom (DataFrame#shift doesn't change DataFrame size)
     return shiftFrames
 
 
-def differences_to_original(differences: np.ndarray, initial_values: np.ndarray, diff_lag: int = 1) -> np.ndarray:
+def supervised_to_rnn_examples(data: list) -> np.ndarray:
+    """
+    Transform list of pd.DataFrames to numpy array for RNN learning
+
+    :param data: list of pd.DataFrames at 'time' t_0, t_1, t_2, ....
+    :return: array of examples where every example is an array of n-dimensional values: [example_0 = [ x_t_0 = [col0_val, col1_val, ...], ... ], ... ]
+    """
+    examples = []
+    if len(data) == 0:
+        return np.array(examples)
+
+    for row in data[0].index:
+        example_over_time = []
+        for t in range(len(data)):
+            df = data[t]  # type: pd.DataFrame
+            row_values = df.loc[row].values  # type: list
+            example_over_time.append(row_values)
+        examples.append(example_over_time)
+    return np.array(examples)
+
+
+def differences_to_original(differences: np.ndarray, initial_value: float, diff_lag: int = 1) -> np.ndarray:
     """
     | Example:
     |
     | train_diff = pd.DataFrame(train).diff(lag).dropna()
     | diff_series = train_diff[0].values  # type: np.ndarray
-    | reversed = differences_to_original(diff_series, train[0:lag], lag)
+    | reversed = differences_to_original(diff_series, train[0], lag)
     |
 
     :param differences: array of differences e.g. after pd.DataFrame.diff(diff_lag)
-    :param initial_values: the first values in the original series
+    :param initial_value: the first value in the original series
     :param diff_lag: how many periods in the differences was used
     :return: original series
     """
-    reverted = np.concatenate((initial_values, differences))
+    reverted = np.concatenate((np.array([initial_value]), differences))
     for i in range(len(differences)):
         reverted[i + diff_lag] = reverted[i] + reverted[i + diff_lag]
     return reverted

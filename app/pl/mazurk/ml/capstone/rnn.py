@@ -7,7 +7,6 @@ from keras.models import Sequential
 def create_model():
     model = Sequential()
     model.add(LSTM(input_dim=1, output_dim=7, return_sequences=False))
-    model.add(Dense(output_dim=5))
     model.add(Dense(output_dim=1))
     model.add(Activation("tanh"))
     model.compile(loss="mean_squared_logarithmic_error", optimizer='adam', metrics=['accuracy'])

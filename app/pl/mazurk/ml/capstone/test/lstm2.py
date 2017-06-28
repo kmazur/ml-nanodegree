@@ -39,8 +39,8 @@ print('Baseline RMSE: %.3f' % rmse)
 # Data preparation for supervised learning
 # =====================================
 diff_lag = 1
-sequence_length = 50
-prediction_length = 30
+sequence_length = 2
+prediction_length = 2
 epochs = 100
 
 dataset_examples = series.to_examples(dataset, diff_lag, sequence_length)
@@ -55,7 +55,9 @@ def predict_sequences_multiple(model, data, window_size, prediction_len) -> list
         curr_frame = data[i * prediction_len]
         predicted = []
         for j in range(prediction_len):
-            predicted.append(model.predict(curr_frame[newaxis, :, :])[0, 0])
+            example = curr_frame[newaxis, :, :]
+            prediction = model.predict(example)
+            predicted.append(prediction[0, 0])
             curr_frame = curr_frame[1:]
             curr_frame = np.insert(curr_frame, [window_size - 1], predicted[-1], axis=0)
         prediction_seqs.append(predicted)
