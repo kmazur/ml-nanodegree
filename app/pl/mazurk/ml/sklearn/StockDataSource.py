@@ -1,4 +1,5 @@
-import pandas_datareader.data as web
+from pandas_datareader import data, wb
+import pandas_datareader as pdr
 import datetime
 import requests_cache
 
@@ -17,11 +18,11 @@ class YahooDataSource(StockDataSource):
         StockDataSource.__init__(self)
     
     def get_tickers(self, symbol, start_date, end_date):
-        panel = web.DataReader(name=symbol, data_source='yahoo', start=start_date, end=end_date, session=self.session)
+
+        panel = data.DataReader(name=symbol, data_source='yahoo', start=start_date, end=end_date, session=self.session)
         df = panel.to_frame().unstack(level=1)
         df.columns = df.columns.swaplevel(0,1)
         return df
     
     def get_ticker(self, symbol, start_date, end_date):
-        df = web.DataReader(name=symbol, data_source='yahoo', start=start_date, end=end_date, session=self.session)
-        return df
+        return data.DataReader(name=symbol, data_source='yahoo', start=start_date, end=end_date, session=self.session)

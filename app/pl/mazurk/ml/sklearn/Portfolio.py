@@ -15,8 +15,8 @@ class Portfolio:
         self.sharpe_ratio = (self.daily_rets - daily_ref).mean() / (self.std_daily_ret)
         self.sharpe_ratio_ann = math.sqrt(252) * self.sharpe_ratio
     def print_stats(self):
-        print "Cumulative return: ", self.cum_ret
-        print "Average daily ret: ", self.avg_daily_ret
-        print "Std of daily ret:  ", self.std_daily_ret
-        print "Sharpe ratio:      ", self.sharpe_ratio
-        print "Sharpe ratio ann:  ", self.sharpe_ratio_ann
+        print("Cumulative return: ", self.cum_ret)
+        print("Average daily ret: ", self.avg_daily_ret)
+        print("Std of daily ret:  ", self.std_daily_ret)
+        print("Sharpe ratio:      ", self.sharpe_ratio)
+        print("Sharpe ratio ann:  ", self.sharpe_ratio_ann)
