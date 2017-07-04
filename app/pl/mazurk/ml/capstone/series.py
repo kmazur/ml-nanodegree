@@ -132,17 +132,17 @@ def from_predictions(predictions: list, examples: np.ndarray, original: np.ndarr
     for i in range(len(predictions)):
         prediction = predictions[i]                                             # [3]           -> diff prediction
         example = examples[i * prediction_length]                               # [1, -2]       -> diff example
-        init = np.array([original[i * prediction_length]])                      # [1]           -> first value in example before diff
+        init = original[i * prediction_length]                                  # 1           -> first value in example before diff
 
         # [1, -2, 3]
         diff_series = np.concatenate((example, prediction))
         # [1] + [1, -2, 3] => [1, 2, 0, 3]
         real_example_with_predictions = differences_to_original(diff_series,
-                                                                initial_values=init,
+                                                                initial_value=init,
                                                                 diff_lag=diff_lag)
 
         # [3]
-        real_predictions = real_example_with_predictions[len(init) + len(example):]
+        real_predictions = real_example_with_predictions[1 + len(example):]
         # [..., [3]]
         real_data.append(real_predictions.tolist())
 

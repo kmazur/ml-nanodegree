@@ -39,9 +39,9 @@ print('Baseline RMSE: %.3f' % rmse)
 # Data preparation for supervised learning
 # =====================================
 diff_lag = 1
-sequence_length = 2
-prediction_length = 2
-epochs = 100
+sequence_length = 20
+prediction_length = 15
+epochs = 20
 
 dataset_examples = series.to_examples(dataset, diff_lag, sequence_length)
 
@@ -115,12 +115,17 @@ X_train2 = np.reshape(X_train, (X_train.shape[0], X_train.shape[1], 1))
 X_test2 = np.reshape(X_test, (X_test.shape[0], X_test.shape[1], 1))
 
 model = rnn.create_model()
-history = model.fit(X_train2, y_train, batch_size=train_size, nb_epoch=epochs, validation_split=0.1)
+import time
+
+start = time.time()
+history = model.fit(X_train2, y_train, batch_size=train_size, epochs=epochs, validation_split=0.1)
+end = time.time()
+print(end - start)
+exit()
 
 vis.plot_history(history)
 
 predictions = predict_sequences_multiple(model, X_test2, sequence_length, prediction_length)
-
 
 # dataset = np.reshape(dataset, len(dataset))
 # dataset_diffs = series.diff(dataset, lag=diff_lag)
