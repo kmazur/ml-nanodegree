@@ -26,12 +26,12 @@ def timeseries_to_supervised(data: pd.DataFrame, sequence_length: int = 1) -> pd
     :param sequence_length: length of the sequence
     :return: pandas DataFrame with rows as sequences of shifted data
     """
-    columns = [data.shift(i) for i in range(sequence_length, 0, -1)]
+    columns = [data.shift(i) for i in range(sequence_length - 1, 0, -1)]
     columns.append(data)
     # Concats arrays to pandas DataFrame and removes n=window_lag first rows
     df2 = pd.concat(columns, axis=1)  # type: pd.DataFrame
     df2.dropna(inplace=True)
-    df2.columns = range(sequence_length + 1)
+    df2.columns = range(sequence_length)
     return df2
 
 def dataframe_to_supervised(data: pd.DataFrame, sequence_length: int = 1) -> list:
@@ -56,6 +56,7 @@ def dataframe_to_supervised(data: pd.DataFrame, sequence_length: int = 1) -> lis
 
 
 def supervised_to_rnn_examples(data: list) -> np.ndarray:
+    # TODO: can utilize just the moving window to create those examples without creating `n x df.shift(_)` dataframes
     """
     Transform list of pd.DataFrames to numpy array for RNN learning
 

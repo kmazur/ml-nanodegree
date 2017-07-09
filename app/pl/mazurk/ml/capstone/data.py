@@ -45,7 +45,7 @@ class DataTransformation:
         #
         # prediction =
         # [
-        #   [ y_0, y_1, ..., y_n], -> prediction for 0th example with `n` outputs / features
+        #    [[y0_f0, y0_f1], [y1_f0, y1_f1], ...], -> prediction for 0th example with `n` outputs / features
         #   ...
         # ]
         #
@@ -65,18 +65,18 @@ class DataTransformation:
         # it is a holder for real/original example + prediction series (last value in example is the prediction)
         predicted_series = []
         for prediction_index in range(len(predictions)):
-            # [y_0, y_1, ...] - `n` features predicted
+            # [[y0_f0, y0_f1], [y1_f0, y1_f1], ...] - `n` features predicted in prediction_length sequence
             prediction = predictions[prediction_index]
             # [ [x0_t0, x1_t0], [x0_t1, x1_t1], ... ] - series preceding the prediction
             example = examples[prediction_index]
 
-            series_with_prediction = np.concatenate((example, np.array([prediction])))
+            series_with_prediction = np.concatenate((example, prediction))
             # decompose to arrays of single features:
             # [ x0_t1, x0_t2, ... ]
             # [ x1_t1, x1_t2, ... ]
             # and calculate the real prediction before diff operation
             shape = np.shape(prediction)
-            features_count = itemgetter(0)(shape)
+            features_count = itemgetter(1)(shape)
 
             # real_predictions will be (o - original from example, p - prediction):
             # [
@@ -88,15 +88,15 @@ class DataTransformation:
                 feature_series = series_with_prediction[:, feature_index]
                 initial_value = initial_values[prediction_index, feature_index]
                 original = series.differences_to_original(feature_series, initial_value, self.diff_lag)
-                real_predictions.append(original)
+                real_predictions.append(original[self.sequence_length:])
 
             # join back the decomposed features for this example. It will be (note that this is for one example):
             # [
             #   [o0_t0, o1_t0], ..., [p0_tn, p1_tn]
             # ]
             real_timesteps = []
-            for timestep_index in range(len(example) + 2):
-                # iterate over all timesteps + 1 prediction + 1 initial value
+            for timestep_index in range(len(prediction)):
+                # iterate over all timesteps
                 features_at_timestep = []
                 for feature_index in range(features_count):
                     # iterate over features for this timestep
