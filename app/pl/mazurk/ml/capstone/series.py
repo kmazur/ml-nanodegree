@@ -150,13 +150,13 @@ def from_predictions(predictions: list, examples: np.ndarray, original: np.ndarr
     return real_data
 
 
-def split_train_test(dataset_examples, ratio: float = 0.8):
+def split_train_test(dataset_examples, ratio: float = 0.8, y_length: int = 1):
     train_size = int(len(dataset_examples) * ratio)
     train = dataset_examples[0:train_size]  # type: np.ndarray
     test = dataset_examples[train_size:]    # type: np.ndarray
 
-    X_train = train[:, 0:-1]
-    X_test = test[:, 0:-1]
-    y_train = train[:, -1]
-    y_test = test[:, -1]
+    X_train = train[:, 0:-y_length]
+    X_test = test[:, 0:-y_length]
+    y_train = train[:, -y_length:]
+    y_test = test[:, -y_length:]
     return X_train, X_test, y_train, y_test

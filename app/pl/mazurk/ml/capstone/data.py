@@ -28,13 +28,20 @@ def dataframe_to_ndarray(df: pd.DataFrame, columns: List[str]) -> np.ndarray:
 
 
 class DataTransformation:
-    def __init__(self, sequence_length: int, diff_lag: int = 1):
+    def __init__(self, sequence_length: int, diff_lag: int = 1, y_length: int = 1):
         assert sequence_length > 1
         assert diff_lag >= 1
+        assert y_length >= 1 and (sequence_length - y_length) > 0
         self.diff_lag = diff_lag
         self.sequence_length = sequence_length
+        self.y_length = y_length
 
     def transform(self, data: pd.DataFrame) -> np.ndarray:
+        # TODO: scale data
+        # scaler = MinMaxScaler(feature_range=(-1, 1))
+        # scaler = scaler.fit(train_diff)
+        # train_scaled = scaler.transform(train_diff)
+        # train_unscaled = scaler.inverse_transform(train_scaled)
         diffed = data.diff(self.diff_lag).dropna()
         supervised = series.dataframe_to_supervised(diffed, self.sequence_length)
         rnn_examples = series.supervised_to_rnn_examples(supervised)  # type: np.ndarray
