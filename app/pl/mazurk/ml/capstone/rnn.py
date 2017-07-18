@@ -1,25 +1,19 @@
-from keras.layers import Activation, GaussianDropout, TimeDistributed
+from keras.layers import Activation, GaussianDropout
 from keras.layers import Dense
 from keras.layers import LSTM
 from keras.models import Sequential
 import numpy as np
 
 
-def create_model(features_count, y_length):
+def create_model(features_count, window_size, y_length=1):
     model = Sequential()
-    model.add(TimeDistributed(
-        LSTM(input_shape=(None, features_count), units=100, return_sequences=True),
-        input_shape=(2000, features_count, y_length))
-    )
-    model.add(GaussianDropout(0.02))
-    model.add(LSTM(input_shape=(None, features_count), units=100, return_sequences=False))
-    model.add(GaussianDropout(0.02))
-    model.add(Dense(units=200))
-    model.add(GaussianDropout(0.1))
-    model.add(Dense(units=200))
-    model.add(GaussianDropout(0.1))
-    model.add(Dense(units=200))
-    model.add(GaussianDropout(0.1))
+    model.add(LSTM(input_shape=(window_size, features_count), units=100, return_sequences=True))
+    model.add(LSTM(input_shape=(window_size, features_count), units=100, return_sequences=True))
+    model.add(LSTM(input_shape=(window_size, features_count), units=100, return_sequences=True))
+    model.add(Dense(units=window_size*5))
+    model.add(GaussianDropout(0.01))
+    model.add(Dense(units=window_size*2))
+    model.add(LSTM(input_shape=(window_size, features_count), units=100, return_sequences=False))
     model.add(Dense(units=features_count))
     model.add(Activation("tanh"))
     model.compile(loss="mean_squared_logarithmic_error", optimizer='adam', metrics=['accuracy'])

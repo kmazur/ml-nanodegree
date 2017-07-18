@@ -41,4 +41,4 @@ def plot_results_multiple(predicted_data, true_data, prediction_length, input_le
         plt.plot(prediction_plot[:, 0], label='Prediction')
         #        for feature_index in range(prediction_plot.shape[1]):
         plt.legend()
-    plt.show(block=True)
+    plt.show(block=False)
