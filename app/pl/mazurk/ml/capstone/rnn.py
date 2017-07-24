@@ -12,7 +12,6 @@ def create_model(features_count, window_size, y_length=1):
     model.add(LSTM(input_shape=(window_size, features_count), units=100, return_sequences=True))
     model.add(Dense(units=window_size*5))
     model.add(GaussianDropout(0.01))
-    model.add(Dense(units=window_size*2))
     model.add(LSTM(input_shape=(window_size, features_count), units=100, return_sequences=False))
     model.add(Dense(units=features_count))
     model.add(Activation("tanh"))

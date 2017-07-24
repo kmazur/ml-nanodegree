@@ -131,9 +131,9 @@ def to_examples(dataset: np.ndarray, diff_lag: int = 1, sequence_length: int = 5
 def from_predictions(predictions: list, examples: np.ndarray, original: np.ndarray, diff_lag: int, prediction_length: int) -> list:
     real_data = []
     for i in range(len(predictions)):
-        prediction = predictions[i]                                             # [3]           -> diff prediction
-        example = examples[i * prediction_length]                               # [1, -2]       -> diff example
-        init = original[i * prediction_length]                                  # 1           -> first value in example before diff
+        prediction = predictions[i]                # [3]           -> diff prediction
+        example = examples[i * prediction_length]  # [1, -2]       -> diff example
+        init = original[i * prediction_length]     # 1           -> first value in example before diff
 
         # [1, -2, 3]
         diff_series = np.concatenate((example, prediction))
